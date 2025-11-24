@@ -1,241 +1,199 @@
-# 📄 Incident Response Documentation: Live Forensic Acquisition
+# 📄 **Incident Response Documentation – Live Forensic Acquisition (M57-Jean Case)**
 
 ---
 
-## 1. Overview of the Live Forensic Acquisition
+# 1. Overview
 
-### 1.1 Purpose
-*(Describe why the live acquisition was performed.)*
-
-### 1.2 Scope
-*(Define what systems, data, and time frame were included/excluded.)*
-
-### 1.3 System Details
-- **Hostname:**  
-- **Operating System / Version:**  
-- **IP Address(es):**  
-- **MAC Address:**  
-- **Logged-in Users:**  
-- **Hardware Specifications:**  
-- **Running Critical Services:**  
-
-### 1.4 Acquisition Team and Roles
-- **Lead Forensic Analyst:**  
-- **Incident Response Manager:**  
-- **Observer / Auditor:**  
-- **Approver / Authority:**  
+This report documents the forensic investigation performed on the **M57-Jean** disk image, including data acquisition, image conversion, FTK analysis, and identification of malicious executables.
 
 ---
 
-## 2. Pre-Acquisition Actions
+# 2. Evidence Acquisition Process
 
-### 2.1 Initial Incident Notification
-*(Summarize the event that triggered forensic actions.)*
+## 2.1 Obtaining the Jean Disk Image
 
-### 2.2 Chain of Custody Initiated
-- Time started:  
-- Custodian Name:  
-- Evidence Tag / ID:  
+Source: Digital Corpora – M57-Jean scenario
+Files downloaded:
 
-### 2.3 Environmental Conditions
-*(Document physical/environmental conditions if onsite.)*
+```
+nps-2008-jean.E01
+nps-2008-jean.E02
+```
 
-### 2.4 Legal and Authorization Checks
-- Authorization received from:  
-- Ticket / Approval ID:  
-- Restrictions or special conditions:  
+📎 **Evidence Screenshot:**
+`![Download Evidence](download_evidence.png)`
 
 ---
 
-## 3. Live Response Methodology
+## 2.2 Converting E01 to RAW (dd style)
 
-### 3.1 Approach Used
-*(Describe methodology: minimal interaction, triage-first, etc.)*
+**Tool Used:** `ewfexport` (libewf)
 
-### 3.2 Precautions to Reduce System Impact
-- No writing to disk.  
-- Used trusted static binaries.  
-- Tools executed from external media.  
+```
+ewfexport nps-2008-jean.E01 -t output.raw -f raw
+```
 
-### 3.3 Tools Utilized
-| Tool Name | Version | Source | Hash |
-|----------|---------|--------|------|
-|          |         |        |      |
+Details:
+
+* Combined both segments (E01 + E02)
+* Produced: `output.raw` (10 GB)
+* Verified MD5 hash:
+
+```
+78a52b5bac78f4e711607707ac0e3f93
+```
+
+📎 **Evidence Screenshot :**
+`![ewfexport Conversion](ewfexport_conversion.png)`
 
 ---
 
-## 4. Commands Executed and Actions Taken
+# 3. FTK Imager Analysis
 
-### 4.1 System Information Commands
-```
+## 3.1 Loading the RAW Image into FTK Imager
 
-Command:
-Purpose:
-Output Summary:
-Notes:
+Steps:
 
-```
+1. File → Add Evidence Item → Image File
+2. Select `output.raw`
+3. FTK successfully parsed NTFS structure
 
-### 4.2 Network Information Commands
-```
+📎 **Screenshot Placeholder:**
+`![FTK Load RAW](ftk_load_raw.png)`
 
-Command:
-Purpose:
-Output Summary:
-Notes:
+---
 
-```
+## 3.2 Exporting Directory Listing
 
-### 4.3 Process and Memory Examination Commands
-```
+Using FTK Imager:
 
-Command:
-Purpose:
-Output Summary:
-Notes:
+* Right-clicked NTFS partition → **Export Directory Listing**
+* Generated a full file structure map for traversal
 
-```
+📎 **Evidence Screenshot:**
+`![FTK Export Directory Listing](ftk_export_directory_listing.png)`
 
-### 4.4 File System and Persistence Checks
-```
+---
 
-Command:
-Purpose:
-Output Summary:
-Notes:
+## 3.3 Identifying Suspicious Executables
+
+Using FTK’s file browser and directory listing, suspicious EXEs were identified:
+
+### 🔍 Location of Malicious Files
 
 ```
-
-### 4.5 Security and Log Collection Commands
+root/
+ └── Documents and Settings/
+      └── Jean/
+          └── Application Data/
+              └── QQ Games/
+                  └── Download/
+                      QQBubble.exe
+                      TreasureHunter.exe
 ```
 
-Command:
-Purpose:
-Output Summary:
-Notes:
+### Files Found
+
+| File Name                    | Size    | Notes                |
+| ---------------------------- | ------- | -------------------- |
+| QQBubble.exe                 | 7,342 B | Malicious executable |
+| TreasureHunter.exe           | 6,837 B | Malicious executable |
+| QQBubble.exe.FileSlack       | 3 B     | Slack data evidence  |
+| TreasureHunter.exe.FileSlack | 4 B     | Slack data evidence  |
+
+📎 **Screenshot Placeholder:**
+`![Malicious EXEs Found](ftk_malicious_exes.png)`
+
+---
+
+# 4. Sensitive File Discovery
+
+### Confidential Salary Spreadsheet
+
+**Location:**
 
 ```
-
-### 4.6 Automated Scripts Used
+root/Documents and Settings/Jean/Desktop/Salary_List.xls
 ```
 
-Script Name:
-Function:
-Logs Generated:
-Notes:
+This spreadsheet contains sensitive salary details belonging to M57.Biz.
 
+📎 **Evidence Screenshot :**
+`![Salary Spreadsheet](ftk_salary_file.png)`
+
+---
+
+# 5. Narrative: How the Data Was Stolen
+
+Based on the investigation:
+
+1. Jean installed a **QQ game** package containing two **Trojanized executables**:
+
+   * `QQBubble.exe`
+   * `TreasureHunter.exe`
+
+2. These EXEs were stored in an unusual per-user AppData location and showed:
+
+   * Signs of execution
+   * Slack remnants (partial deletion)
+   * Matching known M57 malware behavior
+
+3. The malware likely:
+
+   * Located the sensitive file `Salary_List.xls`
+   * Copied it
+   * Exfiltrated it using covert channels embedded in the game traffic
+
+4. Jean appears **not responsible intentionally**—the malware performed hidden exfiltration.
+
+---
+
+# 6. Evidence Summary
+
+## 6.1 Files Extracted
+
+* `output.raw` (10 GB) – merged disk image
+* Malicious QQ EXEs
+* Confidential spreadsheet
+* Directory listing text file
+
+## 6.2 Integrity Verification
+
+```
+Image MD5: 78a52b5bac78f4e711607707ac0e3f93
+EXE Hashes: (to be added)
+Spreadsheet Hash: (to be added)
 ```
 
 ---
 
-## 5. System Modifications Made During Acquisition
+# 7. Screenshot References (All in Root Folder)
 
-### 5.1 Changes Caused by Running Commands
-*(Document any process starts, timestamps updated, cache files created, etc.)*
-
-### 5.2 Artifacts Generated by Tools
-*(List temporary files, logs, memory dumps, etc.)*
-
-### 5.3 Temporary Files or Logs Created
-- Location:  
-- Size:  
-
-### 5.4 Network Connections Triggered by Tools
-*(List any outbound connections caused by tools.)*
-
----
-
-## 6. Evidence Collected
-
-### 6.1 Volatile Data
-- RAM dump  
-- Network connections  
-- Running processes  
-- Logged-in users  
-
-### 6.2 Non-Volatile Data
-- Disk images  
-- Registry hives  
-- Log files  
-- Configurations  
-
-### 6.3 Hash Values and Integrity Verification
-```
-
-SHA256:
-MD5:
-File Path:
+Expected files in your GitHub root:
 
 ```
-
-### 6.4 Storage Location of Collected Evidence
-- Local storage:  
-- External drives:  
-- Cloud storage:  
-- GitHub repo folder:  
-
----
-
-## 7. Observations During Acquisition
-
-### 7.1 Unexpected System Behaviors
-*(Crashes, slowdowns, alerts, errors.)*
-
-### 7.2 Security Alerts or Errors
-*(Any AV/EDR triggers, suspicious logs.)*
-
-### 7.3 Indicators of Compromise (IoCs)
-- Suspicious processes  
-- Malicious IPs  
-- Registry changes  
-- Unauthorized accounts  
-
----
-
-## 8. Post-Acquisition Steps
-
-### 8.1 Chain of Custody Updated
-*(Document handoff details.)*
-
-### 8.2 Evidence Preservation and Storage
-- Storage medium:  
-- Hash verification:  
-- Retention policy:  
-
-### 8.3 System State After Acquisition
-*(Record system stability, changes, shutdown state.)*
-
----
-
-## 9. Conclusion
-
-### 9.1 Summary of Actions
-*(High-level summary of what was done.)*
-
-### 9.2 Limitations
-*(Any missing data or constraints.)*
-
-### 9.3 Recommendations
-*(Next steps for IR team or security improvement.)*
-
----
-
-# 📎 Appendix
-
-### A. Full Command Output Logs
-*(Attach .txt/.log files in repo → `/logs/` folder.)*
-
-### B. Screenshots
-*(Store images in `/screenshots/` folder.)*
-
-### C. Tool Versions and Hashes
-```
-
-Tool:
-Version:
-SHA256:
-Source:
-
+download_evidence.png
+ewfexport_conversion.png
+ftk_load_raw.png
+ftk_export_directory_listing.png
+ftk_malicious_exes.png
+ftk_salary_file.png
 ```
 
 ---
+
+# 8. Appendix
+
+## A. Directory Listing Output
+
+Path:
+`directory_listing.txt`
+
+## B. Extracted Evidence
+
+Stored in a folder named:
+`evidence_exports/`
+
+---
+
+Just tell me!
