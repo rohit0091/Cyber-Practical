@@ -20,6 +20,8 @@ nps-2008-jean.E01
 nps-2008-jean.E02
 ```
 
+![Download Evidence](download_evidence.png)
+
 📎 **Evidence Screenshot:**
 `![Download Evidence](download_evidence.png)`
 
@@ -43,6 +45,7 @@ Details:
 78a52b5bac78f4e711607707ac0e3f93
 ```
 
+![ewfexport Conversion](ewfexport_conversion.png)
 📎 **Evidence Screenshot :**
 `![ewfexport Conversion](ewfexport_conversion.png)`
 
@@ -58,7 +61,8 @@ Steps:
 2. Select `output.raw`
 3. FTK successfully parsed NTFS structure
 
-📎 **Screenshot Placeholder:**
+![FTK Load RAW](ftk_load_raw.png)
+📎 **Evidence Screenshot:**
 `![FTK Load RAW](ftk_load_raw.png)`
 
 ---
@@ -70,6 +74,7 @@ Using FTK Imager:
 * Right-clicked NTFS partition → **Export Directory Listing**
 * Generated a full file structure map for traversal
 
+![FTK Export Directory Listing](ftk_export_directory_listing.png)
 📎 **Evidence Screenshot:**
 `![FTK Export Directory Listing](ftk_export_directory_listing.png)`
 
@@ -101,7 +106,8 @@ root/
 | QQBubble.exe.FileSlack       | 3 B     | Slack data evidence  |
 | TreasureHunter.exe.FileSlack | 4 B     | Slack data evidence  |
 
-📎 **Screenshot Placeholder:**
+![Malicious EXEs Found](ftk_malicious_exes.png)
+📎 **Evidence Screenshot:**
 `![Malicious EXEs Found](ftk_malicious_exes.png)`
 
 ---
@@ -118,6 +124,7 @@ root/Documents and Settings/Jean/Desktop/Salary_List.xls
 
 This spreadsheet contains sensitive salary details belonging to M57.Biz.
 
+![Salary Spreadsheet](ftk_salary_file.png)
 📎 **Evidence Screenshot :**
 `![Salary Spreadsheet](ftk_salary_file.png)`
 
