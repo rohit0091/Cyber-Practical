@@ -1,8 +1,24 @@
-# 📄 **Incident Response Documentation – Live Forensic Acquisition (M57-Jean Case)**
+# 📄 **Cyber Practical Repository**
+
+Welcome to the Cyber Practical repository! This repository contains forensic investigation documentation and daily DSA problem-solving practice.
 
 ---
 
-# 1. Overview
+## 📂 Repository Contents
+
+### 🔍 [Forensic Investigation Documentation](./Readme.md#forensic-investigation)
+Live Forensic Acquisition documentation for the M57-Jean Case
+
+### 💻 [Daily DSA Homework](./DSA-Daily-Homework/)
+Daily problem-solving questions covering Data Structures and Algorithms
+
+---
+
+# Forensic Investigation
+
+## **Incident Response Documentation – Live Forensic Acquisition (M57-Jean Case)**
+
+## 1. Overview
 
 This report documents the forensic investigation performed on the **M57-Jean** disk image, including data acquisition, image conversion, FTK analysis, and identification of malicious executables.
 
